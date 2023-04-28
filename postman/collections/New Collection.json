@@ -1,0 +1,97 @@
+{
+	"info": {
+		"_postman_id": "97940fb4-639d-44ad-9c5d-079da72396b8",
+		"name": "New Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "6806601-97940fb4-639d-44ad-9c5d-079da72396b8"
+	},
+	"item": [
+		{
+			"name": "test request - raw body",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "47e71cf9-0f21-425b-a549-a7a280c363e0",
+						"exec": [
+							"pm.test(\"Set user variables\", function(){",
+							"    pm.environment.set(\"userId\", jsonData.user.id);",
+							"    pm.environment.set(\"userEmail\", jsonData.user.email);",
+							"    pm.environment.set(\"userToken\", jsonData.authorization.token);",
+							"    pm.environment.set(\"userFirstName\", jsonData.user.first_name);",
+							"    pm.environment.set(\"userLastName\", jsonData.user.last_name);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "acd4be9d-a2ad-4402-9eab-d7edd8959890",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user\": {\n        \"email\": \"postmanUser{{$randomWord}}+{{$randomInt}}{{$timestamp}}@ex.com\",\n        \"password\": \"{{userPassword}}\",\n        \"first_name\": \"{{$randomFirstName}}\",\n        \"last_name\": \"{{$randomFirstName}}\"\n    }\n}"
+				},
+				"url": {
+					"raw": "{{gatewayUrl}}/v2/users",
+					"host": [
+						"{{gatewayUrl}}"
+					],
+					"path": [
+						"v2",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "test request - gql body",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1ba7b615-f559-42de-8e8a-1538d9ac9dca",
+						"exec": [
+							"let jsonData = JSON.parse(responseBody)",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "bb121ed0-2161-4e5f-8d44-cf7d50a3db4a",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation upgradeLegacyToken ($input: UpgradeLegacyTokenInput!) {\n    upgradeLegacyToken (input: $input) {\n        accessToken\n        email\n        expiresIn\n        externalUid\n        refreshToken\n        tokenType\n    }\n}",
+						"variables": "{\n  \"traitsToOverride\": \"\",\n  \"storeIds\": [\n    0\n  ],\n  \"input\": {\n    \"authenticationToken\": \"{{userToken}}\"\n  }\n}"
+					}
+				},
+				"url": {
+					"raw": "{{url}}/graphql",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
